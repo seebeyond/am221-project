@@ -1,0 +1,13 @@
+- Check how frequently interesting words appear
+  - Want to have well defined feature vector for every review
+- Features
+  - N-grams
+  - Justification for these features
+    - Plots of frequency, etc.
+- Misclassification error
+  - Cross-validation.
+  - Plot predicted rating vs actual rating.
+  - Sum of squared distances?
+- Benchmark
+  - Quantification of misclassification error
+  - Way to show that you are getting correct rating

@@ -1,0 +1,8 @@
+model ../ampl_svm/svm.mod;
+data ../ampl_svm/svm_data2.dat;
+option solver 'cplex';
+option solver_msg 0;
+solve;
+option display_1col 100000000;
+display w > ../ampl_svm/svm-w.txt;
+display b > ../ampl_svm/svm-b.txt;

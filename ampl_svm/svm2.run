@@ -1,0 +1,8 @@
+model svm.mod;
+data svm_data1.dat;
+option solver 'cplex';
+solve;
+display obj;
+option display_1col 100000000;
+display w > svm-w.txt;
+display b > svm-b.txt;
