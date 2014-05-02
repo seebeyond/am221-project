@@ -21,7 +21,7 @@ ntop = 100
 C = 10
 
 # file containing review data
-review_file = '../raw_data/Software.txt'
+review_file = '../data/Software.txt'
 # review_file = '/Users/Michael/Documents/am221-data/amazon/Software.txt'
 # review_file = '/Users/Michael/Documents/am221-data/amazon/Kindle_Store.txt'   
 
