@@ -541,8 +541,8 @@ def build_SVMs_pair(text, score):
 
     nl_array = np.zeros(ns)
     for i in range(ns):
-        nl_array[i] = sum(score == i + 1)
-    print nl_array
+        nl_array[i] = sum(score[learn_idx] == i + 1)
+#     print nl_array
 
     # lists for various categories
     X_list = [None for i in range(num_svms)]
@@ -608,15 +608,18 @@ def build_SVMs_pair(text, score):
 #     sx = sx[:-1] + ';\n' 
 
     # loop over categories
+    np.set_printoptions(threshold=sys.maxint)    
     for n in range(num_svms):
         
         # construct X matrix and string for each SVM
-        print ' Building %dnth X matrix string...' % n
+        print ' Building %dth X matrix string...' % n
         start = time.time()
         X = X_list[n]
 
         lower = svm_pairs[n][0] - 1
         higher = svm_pairs[n][1] - 1
+        npair = int(nl_array[lower]+nl_array[higher])
+        
         # X parameter string
         sx = 'param X :'
         # initial line
@@ -625,7 +628,6 @@ def build_SVMs_pair(text, score):
         # end of first line
         sx = sx + ' :=\n'
         # complicated ampl matrix formatting
-        np.set_printoptions(threshold=sys.maxint)
         strmat = np.transpose(np.vstack([np.arange(1,nl_array[lower] + nl_array[higher] + 1), np.transpose(X.astype(int))]))
         sxmat = np.array_str(strmat, max_line_width=sys.maxint).replace('\n','').replace('[','').replace(']','\n').replace('  ',' ')
 
@@ -657,13 +659,13 @@ def build_SVMs_pair(text, score):
         
         # Y parameter string
         sy = ''
-        for i in range(nl):
+        for i in range(npair):
             sy = sy + ' ' + str(i+1) + ' ' + np.array_str(Y[i,0])
         
         # Compute number of learning features for each star
-        nl_array = np.zeros(ns)
-        for i in range(ns):
-            nl_array[i] = sum(score == i + 1)
+#         nl_array = np.zeros(ns)
+#         for i in range(ns):
+#             nl_array[i] = sum(score[learn_idx] == i + 1)
 
         # write lines
         f.write('data;\n')
