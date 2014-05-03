@@ -620,18 +620,21 @@ def build_SVMs_pair(text, score):
     print ' Time elapsed: %.4f sec' % (end - start)
 
     # loop over categories
-    for cat in range(ns):
-        print ' Building %d star-vs-all SVM...' % (cat+1)
+    for n in range(num_svms):
+        lower = svm_pairs[n][0]
+        higher = svm_pairs[n][1]
+        
+        print ' Building %d vs %d star SVM...' % (lower, higher)
         start = time.time()
         
         # get data objects
 #         X = X_list[cat]
-        Y = Y_list[cat]
+        Y = Y_list[n]
         
         # write AMPL runfile
         f = open(ampl_run, 'w')
         f.write('model ' + ampl_folder + 'svm.mod;\n')
-        f.write('data ' + ampl_folder + 'svm_data' + str(cat+1) + '.dat;\n')
+        f.write('data ' + ampl_folder + 'svm_data' + str(lower+1) + 'vs' + str(higher + 1) + '.dat;\n')
         f.write("option solver 'cplex';\n")
         f.write("option solver_msg 0;\n")
         f.write("solve;\n");
@@ -641,7 +644,7 @@ def build_SVMs_pair(text, score):
         f.close()
         
         # open data file
-        filename = ampl_folder + 'svm_data' + str(cat+1) + '.dat'
+        filename = ampl_folder + 'svm_data' + str(lower+1) + 'vs' + str(higher + 1) + '.dat'
         f = open(filename,'w')
         
         # Y parameter string
@@ -649,9 +652,14 @@ def build_SVMs_pair(text, score):
         for i in range(nl):
             sy = sy + ' ' + str(i+1) + ' ' + np.array_str(Y[i,0])
         
+        # Compute number of learning features for each star
+        nl_array = np.zeros(ns)
+        for i in range(ns):
+            nl_array[i] = sum(score == i - 1)
+
         # write lines
         f.write('data;\n')
-        f.write('param n := ' + str(nl) + ';\n')
+        f.write('param n := ' + str(nl_array[lower] + nl_array[higher]) + ';\n')
         f.write('param d := ' + str(nf) + ';\n')
         f.write('param C := ' + str(C) + ';\n')
         f.write('param Y := ' + sy + ';\n')
@@ -688,8 +696,8 @@ def build_SVMs_pair(text, score):
         f.close()
         
         # save svm
-        out_file_w = svm_folder + str(cat+1) + '-svm-w.txt'
-        out_file_b = svm_folder + str(cat+1) + '-svm-b.txt'
+        out_file_w = svm_folder + str(lower+1) + 'vs' + str(higher+1) + '-svm-w.txt'
+        out_file_b = svm_folder + str(lower+1) + 'vs' + str(higher+1) + '-svm-b.txt'
         np.savetxt(out_file_w, w)
         np.savetxt(out_file_b, b)
         
