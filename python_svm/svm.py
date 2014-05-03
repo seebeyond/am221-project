@@ -64,7 +64,7 @@ def load_text():
     return text, score
 
 
-def build_SVMs(text, score):
+def build_SVMs_onevsall(text, score):
     #########################################################################################
     # Construct dictionary from random sample
     #########################################################################################
@@ -373,7 +373,7 @@ def build_SVMs(text, score):
 #########################################################################################
 # Make predictions
 #########################################################################################
-def predict(text, score, num, verbose):
+def predict_onevsall(text, score, num, verbose):
     print "Predicting", num, "reviews"
     start = time.time()
 
@@ -465,6 +465,6 @@ if __name__ == "__main__":
 
     text, score = load_text()
     if args.svm:
-        build_SVMs(text, score)
+        build_SVMs_onevsall(text, score)
     if args.predict:
-        predict(text, score, args.predict, args.verbose)
+        predict_onevsall(text, score, args.predict, args.verbose)
