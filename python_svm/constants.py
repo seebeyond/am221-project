@@ -1,9 +1,24 @@
+import numpy as np
+
 #########################################################################################
 # Define constants and parameters
 #########################################################################################
 
 # number of rating categories
 ns = 5
+
+# number of pairwise svms needed
+num_svms = 0
+for i in range(ns):
+    num_svms += i
+
+# tuples corresponding to pairwise svms
+svm_pairs = np.zeros((num_svms,) , dtype=[('f0', '>i4'), ('f1', '>i4')])
+k = 0
+for i in range(ns):
+    for j in range(i+1, ns):
+        svm_pairs[k] = (i+1,j+1)
+        k += 1
 
 # number of reviews in learning set
 nl = 1000
