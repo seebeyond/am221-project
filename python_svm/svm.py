@@ -541,7 +541,8 @@ def build_SVMs_pair(text, score):
 
     nl_array = np.zeros(ns)
     for i in range(ns):
-        nl_array[i] = sum(score == i - 1)
+        nl_array[i] = sum(score == i + 1)
+    print nl_array
 
     # lists for various categories
     X_list = [None for i in range(num_svms)]
@@ -556,6 +557,11 @@ def build_SVMs_pair(text, score):
         X = np.zeros((nl_array[lower] + nl_array[higher],nf))
         Y = np.zeros((nl_array[lower] + nl_array[higher],1))
         row = 0
+        print "length of X", len(X)
+        print "lower", lower
+        print "higher", higher
+        print "nl_array[lower]", nl_array[lower]
+        print "nl_array[higher]", nl_array[higher]
 
         # loop over learning reviews
         # CAN BREAK OUT X SINCE THEY ARE ALL THE SAME IN 1-VS-ALL
@@ -576,7 +582,7 @@ def build_SVMs_pair(text, score):
                 row += 1
         
         # save objects
-        X_list[np] = X
+        X_list[n] = X
         Y_list[n] = Y
 
     end = time.time()
@@ -589,22 +595,7 @@ def build_SVMs_pair(text, score):
 
     print 'Writing and solving AMPL data files...'
 
-    print ' Building X matrix string...'
-    start = time.time()
-    
-    # construct X parameter once - all X's are same for 1-vs-all
-    X = X_list[0]
-    # X parameter string
-    sx = 'param X :'
-    # initial line
-    for i in range(nf):
-        sx = sx + ' ' + str(i + 1)
-    # end of first line
-    sx = sx + ' :=\n'
-    # complicated ampl matrix formatting
-    np.set_printoptions(threshold=sys.maxint)
-    strmat = np.transpose(np.vstack([np.arange(1,nl+1), np.transpose(X.astype(int))]))
-    sxmat = np.array_str(strmat, max_line_width=sys.maxint).replace('\n','').replace('[','').replace(']','\n').replace('  ',' ')
+
 #     sx = sx[:-4] + ';\n'
 #         
 #     # create matrix body
@@ -614,15 +605,32 @@ def build_SVMs_pair(text, score):
 #             sx = sx + ' ' + np.array_str(X[i,j])
 #         sx = sx + '\n'
 #     # take off last break and add in semicolon
-#     sx = sx[:-1] + ';\n'
-    
-    end = time.time()
-    print ' Time elapsed: %.4f sec' % (end - start)
+#     sx = sx[:-1] + ';\n' 
 
     # loop over categories
     for n in range(num_svms):
-        lower = svm_pairs[n][0]
-        higher = svm_pairs[n][1]
+        
+        # construct X matrix and string for each SVM
+        print ' Building %dnth X matrix string...' % n
+        start = time.time()
+        X = X_list[n]
+
+        lower = svm_pairs[n][0] - 1
+        higher = svm_pairs[n][1] - 1
+        # X parameter string
+        sx = 'param X :'
+        # initial line
+        for i in range(nf):
+            sx = sx + ' ' + str(i + 1)
+        # end of first line
+        sx = sx + ' :=\n'
+        # complicated ampl matrix formatting
+        np.set_printoptions(threshold=sys.maxint)
+        strmat = np.transpose(np.vstack([np.arange(1,nl_array[lower] + nl_array[higher] + 1), np.transpose(X.astype(int))]))
+        sxmat = np.array_str(strmat, max_line_width=sys.maxint).replace('\n','').replace('[','').replace(']','\n').replace('  ',' ')
+
+        end = time.time()
+        print ' Time elapsed: %.4f sec' % (end - start)
         
         print ' Building %d vs %d star SVM...' % (lower, higher)
         start = time.time()
@@ -655,7 +663,7 @@ def build_SVMs_pair(text, score):
         # Compute number of learning features for each star
         nl_array = np.zeros(ns)
         for i in range(ns):
-            nl_array[i] = sum(score == i - 1)
+            nl_array[i] = sum(score == i + 1)
 
         # write lines
         f.write('data;\n')
@@ -664,6 +672,8 @@ def build_SVMs_pair(text, score):
         f.write('param C := ' + str(C) + ';\n')
         f.write('param Y := ' + sy + ';\n')
         f.write(sx)
+        f.write(sxmat)
+        f.write(';\n')
         
         # close data file
         f.close()
