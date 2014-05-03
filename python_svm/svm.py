@@ -259,6 +259,9 @@ def build_SVMs(text, score):
 
     print 'Writing and solving AMPL data files...'
 
+    print ' Building X matrix string (long)...'
+    start = time.time()
+    
     # construct X parameter once - all X's are same for 1-vs-all
     X = X_list[0]
     # X parameter string
@@ -276,6 +279,9 @@ def build_SVMs(text, score):
         sx = sx + '\n'
     # take off last break and add in semicolon
     sx = sx[:-1] + ';\n'
+    
+    end = time.time()
+    print ' Time elapsed: %.4f sec' % (end - start)
 
     # loop over categories
     for cat in range(ns):
