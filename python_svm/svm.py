@@ -11,8 +11,10 @@ import re
 import subprocess
 import time
 
+#########################################################################################
+# Load in reviews
+#########################################################################################
 nr = 0
-
 def load_text():
     print 'Reading in data...'
     start = time.time()
@@ -63,7 +65,9 @@ def load_text():
 
     return text, score
 
-
+#########################################################################################
+# Build SVMs for 1-vs-all strategy
+#########################################################################################
 def build_SVMs_onevsall(text, score):
     #########################################################################################
     # Construct dictionary from random sample
@@ -371,7 +375,14 @@ def build_SVMs_onevsall(text, score):
 
 
 #########################################################################################
-# Make predictions
+# Build SVMs for pairwise strategy
+#########################################################################################
+def build_SVMs_pair(text, score):
+    return True
+
+
+#########################################################################################
+# Make predictions for 1-vs-all strategy
 #########################################################################################
 def predict_onevsall(text, score, num, verbose):
     print "Predicting", num, "reviews"
@@ -455,16 +466,33 @@ def predict_onevsall(text, score, num, verbose):
     print ' Time elapsed: %.4f sec per review' % ((end - start)/float(num))
 
 
+#########################################################################################
+# Make predictions for pairwise strategy
+#########################################################################################
+def predict_pair(text, score, num, verbose):
+    return True
+
+
+#########################################################################################
+# Main function
+#########################################################################################
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Build SVM Classifier and make some number of predictions.")
     parser.add_argument("-s", "--svm", help="build the SVMs", action="store_true")
+    parser.add_argument("-t", "--type", help="select type of SVMs (0 for 1-vs-all, 1 for pairwise)", type=int, default=0)
     parser.add_argument("-p","--predict", help="number of predictions to run (integer)", type=int)
     parser.add_argument("-v","--verbose", help="set flag for verbose output for predictions", action="store_true")
 
     args = parser.parse_args()
 
     text, score = load_text()
-    if args.svm:
-        build_SVMs_onevsall(text, score)
-    if args.predict:
-        predict_onevsall(text, score, args.predict, args.verbose)
+    if not args.type:
+        if args.svm:
+            build_SVMs_onevsall(text, score)
+        if args.predict:
+            predict_onevsall(text, score, args.predict, args.verbose)
+    else:
+        if args.svm:
+            build_SVMs_pair(text, score)
+        if args.predict:
+            predict_pair(text, score, args.predict, args.verbose)
