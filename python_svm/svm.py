@@ -707,17 +707,12 @@ def predict_onevsall(text, score, num, verbose):
     print "Predicting", num, "reviews"
     start = time.time()
 
-    # read in value for nf
-    f = open("../ampl_svm/svm_data1.dat")
-    data = f.read()
-    f.close()
-    sp = data.split('\n')
-    nf = int(sp[2][len(sp[2])-4:len(sp[2])-1])
-
-    # initialize lists for SVMs
-    w_list = [np.zeros(nf) for i in range(ns)]
-    b_list = [np.zeros(1) for i in range(ns)]
-    conf_scores = np.zeros(ns)
+#     # read in value for nf
+#     f = open("../ampl_svm/svm_data1.dat")
+#     data = f.read()
+#     f.close()
+#     sp = data.split('\n')
+#     nf = int(sp[2][len(sp[2])-4:len(sp[2])-1])
 
     # import SVM dict
     svm_dict = {}
@@ -726,6 +721,13 @@ def predict_onevsall(text, score, num, verbose):
     for key, val in csv.reader(f):
         svm_dict[key] = int(val)
     f.close()
+    nf = len(svm_dict)
+    print ' There are %d features' % nf
+
+    # initialize lists for SVMs
+    w_list = [np.zeros(nf) for i in range(ns)]
+    b_list = [np.zeros(1) for i in range(ns)]
+    conf_scores = np.zeros(ns)
 
     error = 0
     numcorrect = 0
