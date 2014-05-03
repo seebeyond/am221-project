@@ -10,6 +10,7 @@ import random
 import re
 import subprocess
 import time
+import sys
 
 #########################################################################################
 # Load in reviews
@@ -263,7 +264,7 @@ def build_SVMs_onevsall(text, score):
 
     print 'Writing and solving AMPL data files...'
 
-    print ' Building X matrix string (long)...'
+    print ' Building X matrix string...'
     start = time.time()
     
     # construct X parameter once - all X's are same for 1-vs-all
@@ -275,14 +276,20 @@ def build_SVMs_onevsall(text, score):
         sx = sx + ' ' + str(i + 1)
     # end of first line
     sx = sx + ' :=\n'
-    # create matrix body
-    for i in range(nl):
-        sx = sx + '          ' + str(i + 1)
-        for j in range(nf):
-            sx = sx + ' ' + np.array_str(X[i,j])
-        sx = sx + '\n'
-    # take off last break and add in semicolon
-    sx = sx[:-1] + ';\n'
+    # complicated ampl matrix formatting
+    np.set_printoptions(threshold=sys.maxint)
+    strmat = np.transpose(np.vstack([np.arange(1,nl+1), np.transpose(X.astype(int))]))
+    sxmat = np.array_str(strmat, max_line_width=sys.maxint).replace('\n','').replace('[','').replace(']','\n').replace('  ',' ')
+#     sx = sx[:-4] + ';\n'
+#         
+#     # create matrix body
+#     for i in range(nl):
+#         sx = sx + '          ' + str(i + 1)
+#         for j in range(nf):
+#             sx = sx + ' ' + np.array_str(X[i,j])
+#         sx = sx + '\n'
+#     # take off last break and add in semicolon
+#     sx = sx[:-1] + ';\n'
     
     end = time.time()
     print ' Time elapsed: %.4f sec' % (end - start)
@@ -324,6 +331,8 @@ def build_SVMs_onevsall(text, score):
         f.write('param C := ' + str(C) + ';\n')
         f.write('param Y := ' + sy + ';\n')
         f.write(sx)
+        f.write(sxmat)
+        f.write(';\n')
         
         # close data file
         f.close()
