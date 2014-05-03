@@ -229,6 +229,7 @@ def build_SVMs(text, score):
         row = 0
 
         # loop over learning reviews
+        # CAN BREAK OUT X SINCE THEY ARE ALL THE SAME IN 1-VS-ALL
         for i in range(nl):
             idx = learn_idx[i]
             scr = int(score[idx]) - 1
@@ -258,13 +259,31 @@ def build_SVMs(text, score):
 
     print 'Writing and solving AMPL data files...'
 
+    # construct X parameter once - all X's are same for 1-vs-all
+    X = X_list[0]
+    # X parameter string
+    sx = 'param X :'
+    # initial line
+    for i in range(nf):
+        sx = sx + ' ' + str(i + 1)
+    # end of first line
+    sx = sx + ' :=\n'
+    # create matrix body
+    for i in range(nl):
+        sx = sx + '          ' + str(i + 1)
+        for j in range(nf):
+            sx = sx + ' ' + np.array_str(X[i,j])
+        sx = sx + '\n'
+    # take off last break and add in semicolon
+    sx = sx[:-1] + ';\n'
+
     # loop over categories
     for cat in range(ns):
         print ' Building %d star-vs-all SVM...' % (cat+1)
         start = time.time()
         
         # get data objects
-        X = X_list[cat]
+#         X = X_list[cat]
         Y = Y_list[cat]
         
         # write AMPL runfile
@@ -287,22 +306,6 @@ def build_SVMs(text, score):
         sy = ''
         for i in range(nl):
             sy = sy + ' ' + str(i+1) + ' ' + np.array_str(Y[i,0])
-        
-        # X parameter string
-        sx = 'param X :'
-        # initial line
-        for i in range(nf):
-            sx = sx + ' ' + str(i + 1)
-        # end of first line
-        sx = sx + ' :=\n'
-        # create matrix body
-        for i in range(nl):
-            sx = sx + '          ' + str(i + 1)
-            for j in range(nf):
-                sx = sx + ' ' + np.array_str(X[i,j])
-            sx = sx + '\n'
-        # take off last break and add in semicolon
-        sx = sx[:-1] + ';\n'
         
         # write lines
         f.write('data;\n')
