@@ -72,6 +72,14 @@ if __name__ == "__main__":
     parser.add_argument("-v","--verbose", help="set flag for verbose output for predictions", action="store_true")
 
     args = parser.parse_args()
+    
+    print 'Running SVM with arguments:'
+    print ' Learning set: %d' % nl
+    print ' Min count: %d' % min_ct
+    print ' Common words removed: %d' % ncommon
+    print ' Features from each category: %d' % ntop
+    print ' Penalty factor: %2f' % C
+    print ' Highest n-gram: %d' % ng
 
     text, score = load_text()
     if not args.type:

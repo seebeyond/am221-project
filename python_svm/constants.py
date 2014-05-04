@@ -40,7 +40,7 @@ ntop = 100
 C = 10
 
 # highest cardinality of n-grams to include
-ng = 3
+ng = 2
 
 # file containing review data
 review_file = '../data/Software.txt'

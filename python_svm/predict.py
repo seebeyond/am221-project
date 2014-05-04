@@ -122,6 +122,7 @@ def predict_pair(text, score, num, verbose):
         svm_dict[key] = int(val)
     f.close()
     nf = len(svm_dict)
+    print ' There are %d features' % nf
 
     # initialize lists for SVMs
     w_list = [np.zeros(nf) for i in range(num_svms)]
