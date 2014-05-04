@@ -1,5 +1,6 @@
 import re
 import Stemmer # PyStemmer - https://pypi.python.org/pypi/PyStemmer/1.0.1
+from constants import *
 
 # Function to extract n-grams
 def ngrams(seq, n):
@@ -18,4 +19,6 @@ def process_text(text, stemmer):
     # n-grams
 #     words = stm + ngrams(words, 2)
     words = stm
+    for i in range(2,ng+1):
+        words = words + ngrams(words, i)
     return words

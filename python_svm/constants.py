@@ -25,7 +25,7 @@ for i in range(ns):
 
 
 # number of reviews in learning set
-nl = 1000
+nl = 100
 
 # minimum number of occurrences in corpus to be considered for feature
 min_ct = 20
@@ -38,6 +38,9 @@ ntop = 100
 
 # penalty factor for SVM
 C = 10
+
+# highest cardinality of n-grams to include
+ng = 1
 
 # file containing review data
 review_file = '../data/Software.txt'
