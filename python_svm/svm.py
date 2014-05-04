@@ -11,11 +11,24 @@ import re
 import subprocess
 import time
 import sys
+import os,sys,inspect
+
+# add parent directory to python path
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir) 
+
+# from stemming.porter2 import stem
+# from ngrams import *
+# PyStemmer - https://pypi.python.org/pypi/PyStemmer/1.0.1
+import Stemmer
+stemmer = Stemmer.Stemmer('english')
+
+nr = 0
 
 #########################################################################################
 # Load in reviews
 #########################################################################################
-nr = 0
 def load_text():
     print 'Reading in data...'
     start = time.time()
@@ -96,10 +109,11 @@ def build_SVMs_onevsall(text, score):
         # reg-ex to split on
         words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
         words = filter(bool, words)
+        words = stemmer.stemWords(words)
     #     if i % 1000 == 0:
     #       print(' Iteration %d' % (i))
         for word in words:
-    #       word = stem(word)     # extract root of word
+#             word = correct(word)     # extract root of word
           # add to category dictionary
             if word in learn_dicts[scr].keys():
                 learn_dicts[scr][word] += 1 
@@ -243,8 +257,9 @@ def build_SVMs_onevsall(text, score):
             # reg-ex to split on
             words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
             words = filter(bool, words)
+            words = stemmer.stemWords(words)
             for word in words:
-    #           word = stem(word)     # extract root of word
+#                 word = correct(word)     # extract root of word
                 if word in svm_dict.keys():
                     X[row, svm_dict[word]] += 1
             Y[row] = 1 if scr == cat else -1
@@ -413,6 +428,7 @@ def build_SVMs_pair(text, score):
         # reg-ex to split on
         words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
         words = filter(bool, words)
+        words = stemmer.stemWords(words)
     #     if i % 1000 == 0:
     #       print(' Iteration %d' % (i))
         for word in words:
@@ -569,6 +585,7 @@ def build_SVMs_pair(text, score):
                 # reg-ex to split on
                 words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
                 words = filter(bool, words)
+                words = stemmer.stemWords(words)
                 for word in words:
         #           word = stem(word)     # extract root of word
                     if word in svm_dict.keys():
@@ -752,10 +769,12 @@ def predict_onevsall(text, score, num, verbose):
 
     error = 0
     numcorrect = 0
+    
+    predict_idxs = random.sample(range(nr),num)
 
     for k in range(num):
         # get random index
-        pidx = random.sample(range(nr),1)[0]
+        pidx = predict_idxs[k]
 
         # construct feature vector for the test
         x = np.zeros(nf)
@@ -765,7 +784,9 @@ def predict_onevsall(text, score, num, verbose):
         # reg-ex to split on
         words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
         words = filter(bool, words)
+        words = stemmer.stemWords(words)
         for word in words:
+#             word = correct(word)     # extract root of word
             if word in svm_dict.keys():
         #         print word
                 x[svm_dict[word]] = 1
@@ -841,11 +862,15 @@ def predict_pair(text, score, num, verbose):
     error = 0
     numcorrect = 0
 
+    predict_idxs = random.sample(range(nr),num)
+
     for k in range(num):
-        # get random index
+        # initialize
         votes = np.zeros(ns)
         svm_results = np.zeros(num_svms)
-        pidx = random.sample(range(nr),1)[0]
+        
+        # get random index
+        pidx = predict_idxs[k]
 
         # construct feature vector for the test
         x = np.zeros(nf)
@@ -855,6 +880,7 @@ def predict_pair(text, score, num, verbose):
         # reg-ex to split on
         words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
         words = filter(bool, words)
+        words = stemmer.stemWords(words)
         for word in words:
             if word in svm_dict.keys():
         #         print word

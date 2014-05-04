@@ -77,7 +77,7 @@ def avoid_long_words(key, N):
 
 N = 1024908267229 ## Number of tokens
 
-Pw  = Pdist(datafile('count_1w.txt'), N, avoid_long_words)
+Pw  = Pdist(datafile('../ngrams/count_1w.txt'), N, avoid_long_words)
 # 
 # #### segment2: second version, with bigram counts, (p. 226-227)
 # 
@@ -212,6 +212,12 @@ def corrections(text):
 def correct(w): 
     "Return the word that is the most likely spell correction of w." 
     candidates = edits(w).items() 
+    if not candidates:
+#         print w
+#         print candidates
+        return w
+#     if len(candidates == 0):
+#         print 'Word %s gives empty candidate list' % w
     c, edit = max(candidates, key=lambda (c,e): Pedit(e) * Pw(c)) 
     return c 
 

@@ -1,5 +1,5 @@
 model ../ampl_svm/svm.mod;
-data ../ampl_svm/svm_data4vs5.dat;
+data ../ampl_svm/svm_data5.dat;
 option solver 'cplex';
 option solver_msg 0;
 solve;
