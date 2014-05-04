@@ -3,6 +3,7 @@
 import argparse
 from collections import Counter
 from constants import *
+from helpers import *
 import csv
 import json
 import numpy as np
@@ -23,7 +24,7 @@ def predict_onevsall(text, score, num, verbose):
 
     # import SVM dict
     svm_dict = {}
-    in_file_idx = svm_folder + 'svm-dict.csv'
+    in_file_idx = svm_folder + 'svm-dict-onevsall.csv'
     f = open(in_file_idx)
     for key, val in csv.reader(f):
         svm_dict[key] = int(val)
@@ -54,16 +55,16 @@ def predict_onevsall(text, score, num, verbose):
         # construct feature vector for the test
         x = np.zeros(nf)
         scr = int(score[pidx]) - 1
-        # get rid of escaped characters and apostrophes
-        txt = text[pidx].lower().replace("&quot;","'").replace("'","")
-        # reg-ex to split on
-        words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
-        words = filter(bool, words)
-        words = stemmer.stemWords(words)
+        words = process_text(text[pidx], stemmer) 
+#         # get rid of escaped characters and apostrophes
+#         txt = text[pidx].lower().replace("&quot;","'").replace("'","")
+#         # reg-ex to split on
+#         words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
+#         words = filter(bool, words)
+#         words = stemmer.stemWords(words)
         for word in words:
 #             word = correct(word)     # extract root of word
             if word in svm_dict.keys():
-        #         print word
                 x[svm_dict[word]] = 1
 
         for i in range(ns):
@@ -115,7 +116,7 @@ def predict_pair(text, score, num, verbose):
 
     # import SVM dictionary
     svm_dict = {}
-    in_file_idx = svm_folder + 'svm-dict.csv'
+    in_file_idx = svm_folder + 'svm-dict-pair.csv'
     f = open(in_file_idx)
     for key, val in csv.reader(f):
         svm_dict[key] = int(val)
@@ -148,17 +149,10 @@ def predict_pair(text, score, num, verbose):
         # construct feature vector for the test
         x = np.zeros(nf)
         scr = int(score[pidx]) - 1
-        # get rid of escaped characters and apostrophes
-        txt = text[pidx].lower().replace("&quot;","'").replace("'","")
-        # reg-ex to split on
-        words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
-        words = filter(bool, words)
-        words = stemmer.stemWords(words)
+        words = process_text(text[pidx], stemmer)
         for word in words:
             if word in svm_dict.keys():
-        #         print word
                 x[svm_dict[word]] = 1
-
 
         for i in range(num_svms):
             # SVM files

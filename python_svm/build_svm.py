@@ -3,6 +3,7 @@
 import argparse
 from collections import Counter
 from constants import *
+from helpers import *
 import csv
 import json
 import numpy as np
@@ -18,7 +19,7 @@ import Stemmer # PyStemmer - https://pypi.python.org/pypi/PyStemmer/1.0.1
 # currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 # parentdir = os.path.dirname(currentdir)
 # sys.path.insert(0,parentdir) 
-
+    
 
 #########################################################################################
 # Build SVM dict and select features
@@ -41,16 +42,14 @@ def feature_select(text, score, learn_idx, stemmer):
     for i in range(nl):
         idx = learn_idx[i]
         scr = int(score[idx]) - 1
-        # get rid of escaped characters and apostrophes
-        txt = text[idx].lower().replace("&quot;","'").replace("'","")
-        # reg-ex to split on
-        words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
-        words = filter(bool, words)
-        words = stemmer.stemWords(words)
-    #     if i % 1000 == 0:
-    #       print(' Iteration %d' % (i))
+        words = process_text(text[idx], stemmer)
+#         # get rid of escaped characters and apostrophes
+#         txt = text[idx].lower().replace("&quot;","'").replace("'","")
+#         # reg-ex to split on
+#         words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
+#         words = filter(bool, words)
+#         words = stemmer.stemWords(words) + ngrams(words, 2)
         for word in words:
-#             word = correct(word)     # extract root of word
           # add to category dictionary
             if word in learn_dicts[scr].keys():
                 learn_dicts[scr][word] += 1 
@@ -200,12 +199,7 @@ def build_SVMs_onevsall(text, score):
         for i in range(nl):
             idx = learn_idx[i]
             scr = int(score[idx]) - 1
-            # get rid of escaped characters and apostrophes
-            txt = text[idx].lower().replace("&quot;","'").replace("'","")
-            # reg-ex to split on
-            words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
-            words = filter(bool, words)
-            words = stemmer.stemWords(words)
+            words = process_text(text[idx], stemmer)
             for word in words:
 #                 word = correct(word)     # extract root of word
                 if word in svm_dict.keys():
@@ -328,7 +322,7 @@ def build_SVMs_onevsall(text, score):
     # end loop
 
     # save svm dictionary
-    out_file_idx = svm_folder + 'svm-dict.csv'
+    out_file_idx = svm_folder + 'svm-dict-onevsall.csv'
     f = open(out_file_idx, "w")
     w = csv.writer(f)
     for key, val in svm_dict.items():
@@ -362,7 +356,6 @@ def build_SVMs_pair(text, score):
     nl_array = np.zeros(ns)
     for i in range(ns):
         nl_array[i] = sum(score[learn_idx] == i + 1)
-#     print nl_array
 
     # lists for various categories
     X_list = [None for i in range(num_svms)]
@@ -384,14 +377,8 @@ def build_SVMs_pair(text, score):
             idx = learn_idx[i]
             scr = int(score[idx]) - 1
             if scr == lower or scr == higher:
-                # get rid of escaped characters and apostrophes
-                txt = text[idx].lower().replace("&quot;","'").replace("'","")
-                # reg-ex to split on
-                words = re.split("[\W\s\!+\.+,+\?+\"]", txt)
-                words = filter(bool, words)
-                words = stemmer.stemWords(words)
+                words = process_text(text[idx], stemmer)             
                 for word in words:
-        #           word = stem(word)     # extract root of word
                     if word in svm_dict.keys():
                         X[row, svm_dict[word]] += 1
                 Y[row] = 1 if scr == lower  else -1
@@ -410,18 +397,6 @@ def build_SVMs_pair(text, score):
     #########################################################################################
 
     print 'Writing and solving AMPL data files...'
-
-
-#     sx = sx[:-4] + ';\n'
-#         
-#     # create matrix body
-#     for i in range(nl):
-#         sx = sx + '          ' + str(i + 1)
-#         for j in range(nf):
-#             sx = sx + ' ' + np.array_str(X[i,j])
-#         sx = sx + '\n'
-#     # take off last break and add in semicolon
-#     sx = sx[:-1] + ';\n' 
 
     # loop over categories
     np.set_printoptions(threshold=sys.maxint)    
@@ -478,11 +453,6 @@ def build_SVMs_pair(text, score):
         for i in range(npair):
             sy = sy + ' ' + str(i+1) + ' ' + np.array_str(Y[i,0])
         
-        # Compute number of learning features for each star
-#         nl_array = np.zeros(ns)
-#         for i in range(ns):
-#             nl_array[i] = sum(score[learn_idx] == i + 1)
-
         # write lines
         f.write('data;\n')
         f.write('param n := ' + str(nl_array[lower] + nl_array[higher]) + ';\n')
@@ -534,7 +504,7 @@ def build_SVMs_pair(text, score):
     # end loop
 
     # save svm dictionary
-    out_file_idx = svm_folder + 'svm-dict.csv'
+    out_file_idx = svm_folder + 'svm-dict-pair.csv'
     f = open(out_file_idx, "w")
     w = csv.writer(f)
     for key, val in svm_dict.items():
