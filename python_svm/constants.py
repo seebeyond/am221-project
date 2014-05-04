@@ -14,11 +14,15 @@ for i in range(ns):
 
 # tuples corresponding to pairwise svms
 svm_pairs = np.zeros((num_svms,) , dtype=[('f0', '>i4'), ('f1', '>i4')])
+svm_pairs_reverse = {}
 k = 0
 for i in range(ns):
     for j in range(i+1, ns):
         svm_pairs[k] = (i+1,j+1)
         k += 1
+
+        svm_pairs_reverse[str((i+1,j+1))] = k - 1
+
 
 # number of reviews in learning set
 nl = 1000

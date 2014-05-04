@@ -557,11 +557,6 @@ def build_SVMs_pair(text, score):
         X = np.zeros((nl_array[lower] + nl_array[higher],nf))
         Y = np.zeros((nl_array[lower] + nl_array[higher],1))
         row = 0
-        print "length of X", len(X)
-        print "lower", lower
-        print "higher", higher
-        print "nl_array[lower]", nl_array[lower]
-        print "nl_array[higher]", nl_array[higher]
 
         # loop over learning reviews
         # CAN BREAK OUT X SINCE THEY ARE ALL THE SAME IN 1-VS-ALL
@@ -786,6 +781,8 @@ def predict_onevsall(text, score, num, verbose):
             b_list[i] = b
             
             # get confidence score for i-vs-all SVM
+            print "length of w", len(w)
+            print "length of x", len(x)
             c = np.dot(w,x) - b
             conf_scores[i] = c
 
@@ -821,30 +818,33 @@ def predict_pair(text, score, num, verbose):
     start = time.time()
 
     # read in value for nf
-    f = open("../ampl_svm/svm_data1.dat")
-    data = f.read()
-    f.close()
-    sp = data.split('\n')
-    nf = int(sp[2][len(sp[2])-4:len(sp[2])-1])
-
-    # initialize lists for SVMs
-    w_list = [np.zeros(nf) for i in range(ns)]
-    b_list = [np.zeros(1) for i in range(ns)]
-    conf_scores = np.zeros(ns)
+    # f = open("../ampl_svm/svm_data1.dat")
+    # data = f.read()
+    # f.close()
+    # sp = data.split('\n')
+    # nf = int(sp[2][len(sp[2])-4:len(sp[2])-1])
 
     # import SVM dict
+
     svm_dict = {}
     in_file_idx = svm_folder + 'svm-dict.csv'
     f = open(in_file_idx)
     for key, val in csv.reader(f):
         svm_dict[key] = int(val)
     f.close()
+    nf = len(svm_dict)
+
+    # initialize lists for SVMs
+    w_list = [np.zeros(nf) for i in range(num_svms)]
+    b_list = [np.zeros(1) for i in range(num_svms)]
 
     error = 0
     numcorrect = 0
 
     for k in range(num):
         # get random index
+        votes = np.zeros(ns)
+        svm_results = np.zeros(num_svms)
         pidx = random.sample(range(nr),1)[0]
 
         # construct feature vector for the test
@@ -863,10 +863,10 @@ def predict_pair(text, score, num, verbose):
 
         for i in range(num_svms):
             # SVM files
-            lower = num_svms[i][0] - 1
-            higher = num_svms[i][1] - 1
-            in_file_w = svm_folder + str(i+1) + '-svm-w.txt'
-            in_file_b = svm_folder + str(i+1) + '-svm-b.txt'
+            lower = svm_pairs[i][0] - 1
+            higher = svm_pairs[i][1] - 1
+            in_file_w = svm_folder + str(lower+1) + 'vs' + str(higher+1) + '-svm-w.txt'
+            in_file_b = svm_folder + str(lower+1) + 'vs' + str(higher+1) + '-svm-b.txt'
             # import SVM and save
             w = np.loadtxt(in_file_w)
             b = np.loadtxt(in_file_b)
@@ -875,10 +875,28 @@ def predict_pair(text, score, num, verbose):
             
             # get confidence score for i-vs-all SVM
             c = np.dot(w,x) - b
-            conf_scores[i] = c
+
+            if c > 0:
+                votes[lower] += 1
+            else:
+                votes[higher] += 1
+
+            svm_results[i] = c
 
         # Print prediction and data
-        predict = np.argmax(conf_scores)
+        predict = np.argmax(votes)
+        most_votes = votes[predict]
+
+        if sum(votes == most_votes) > 1:
+            maxindices = np.where(votes == most_votes)[0]
+            lower = maxindices[0]
+            higher = maxindices[1]
+            head_to_head_index = svm_pairs_reverse[str((lower + 1, higher + 1))]
+            head_to_head = svm_results[head_to_head_index]
+            if head_to_head > 0:
+                predict = lower
+            else:
+                predict = higher
 
         if predict == scr:
             numcorrect += 1
@@ -888,7 +906,8 @@ def predict_pair(text, score, num, verbose):
             print "Predicting", k + 1, "of", num
             print ' Predicted score is %d' % (predict + 1)
             print ' Actual score is %d' % (scr + 1)
-            print ' Confidence scores:', conf_scores
+            print ' Votes:', votes
+            print ' Confidence scores:', svm_results
             print ' Review text:'
             print ' ' + text[pidx]
             print
