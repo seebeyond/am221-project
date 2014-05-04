@@ -533,7 +533,7 @@ def build_SVMs_pair(text, score):
 
 
     #########################################################################################
-    # Build the feature vectors for one-vs-all approach
+    # Build the feature vectors for pairwise approach
     #########################################################################################
 
     print 'Building feature vectors...'
