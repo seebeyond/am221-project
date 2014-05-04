@@ -781,8 +781,8 @@ def predict_onevsall(text, score, num, verbose):
             b_list[i] = b
             
             # get confidence score for i-vs-all SVM
-            print "length of w", len(w)
-            print "length of x", len(x)
+#             print "length of w", len(w)
+#             print "length of x", len(x)
             c = np.dot(w,x) - b
             conf_scores[i] = c
 
