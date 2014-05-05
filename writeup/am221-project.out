@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Abstract}{}% 1
+\BOOKMARK [1][-]{section.2}{Motivation}{}% 2
+\BOOKMARK [1][-]{section.3}{Data}{}% 3
+\BOOKMARK [1][-]{section.4}{Feature Selection}{}% 4
+\BOOKMARK [2][-]{subsection.4.1}{Stemming}{section.4}% 5
+\BOOKMARK [2][-]{subsection.4.2}{Z-scores}{section.4}% 6
+\BOOKMARK [1][-]{section.5}{SVMs as LPs}{}% 7
+\BOOKMARK [1][-]{section.6}{Extending SVMs to Multi-Class Classification}{}% 8
+\BOOKMARK [2][-]{subsection.6.1}{One-vs-All}{section.6}% 9
+\BOOKMARK [2][-]{subsection.6.2}{Pairwise}{section.6}% 10
+\BOOKMARK [1][-]{section.7}{Results}{}% 11
+\BOOKMARK [2][-]{subsection.7.1}{Best Results}{section.7}% 12
+\BOOKMARK [2][-]{subsection.7.2}{Examples of Misclassifications}{section.7}% 13
+\BOOKMARK [1][-]{section.8}{Conclusions}{}% 14
+\BOOKMARK [1][-]{section.9}{The Code}{}% 15
+\BOOKMARK [2][-]{subsection.9.1}{Dependencies}{section.9}% 16
+\BOOKMARK [1][-]{section.10}{References}{}% 17
