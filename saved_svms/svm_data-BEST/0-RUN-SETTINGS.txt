@@ -1,0 +1,87 @@
+Running SVM with arguments:
+ Learning set: 2500
+ Min count: 8
+ Common words removed: 150
+ Features from each category: 1000
+ Penalty factor: 10.000000
+ Highest n-gram: 2
+Reading in data...
+ Time elapsed: 1.9523 sec
+Constructing learning dictionaries...
+  0 complete
+  100 complete
+  200 complete
+  300 complete
+  400 complete
+  500 complete
+  600 complete
+  700 complete
+  800 complete
+  900 complete
+  1000 complete
+  1100 complete
+  1200 complete
+  1300 complete
+  1400 complete
+  1500 complete
+  1600 complete
+  1700 complete
+  1800 complete
+  1900 complete
+  2000 complete
+  2100 complete
+  2200 complete
+  2300 complete
+  2400 complete
+ Time elapsed: 4732.0613 sec
+Selecting features...
+ Time elapsed: 145.2238 sec
+Building feature vectors...
+ Time elapsed: 318.8014 sec
+Writing and solving AMPL data files...
+ Building 0th X matrix string...
+ Time elapsed: 86.2189 sec
+ Building 0 vs 1 star SVM...
+ Time elapsed: 3.4740 sec
+ Building 1th X matrix string...
+ Time elapsed: 97.3047 sec
+ Building 0 vs 2 star SVM...
+ Time elapsed: 4.1328 sec
+ Building 2th X matrix string...
+ Time elapsed: 162.3410 sec
+ Building 0 vs 3 star SVM...
+ Time elapsed: 6.5587 sec
+ Building 3th X matrix string...
+ Time elapsed: 270.3193 sec
+ Building 0 vs 4 star SVM...
+ Time elapsed: 9.3126 sec
+ Building 4th X matrix string...
+ Time elapsed: 49.6911 sec
+ Building 1 vs 2 star SVM...
+ Time elapsed: 1.6532 sec
+ Building 5th X matrix string...
+ Time elapsed: 66.0784 sec
+ Building 1 vs 3 star SVM...
+ Time elapsed: 2.7554 sec
+ Building 6th X matrix string...
+ Time elapsed: 176.7415 sec
+ Building 1 vs 4 star SVM...
+ Time elapsed: 5.7770 sec
+ Building 7th X matrix string...
+ Time elapsed: 64.1264 sec
+ Building 2 vs 3 star SVM...
+ Time elapsed: 2.1713 sec
+ Building 8th X matrix string...
+ Time elapsed: 172.5297 sec
+ Building 2 vs 4 star SVM...
+ Time elapsed: 7.3919 sec
+ Building 9th X matrix string...
+ Time elapsed: 192.6411 sec
+ Building 3 vs 4 star SVM...
+ Time elapsed: 6.2070 sec
+Predicting 1000 reviews
+ There are 4367 features
+Percentage Correct: 0.504
+Mean Square Error: 2.34
+ Time elapsed: 251.8965 sec
+ Time elapsed: 0.2519 sec per review

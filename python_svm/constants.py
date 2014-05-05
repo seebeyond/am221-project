@@ -25,16 +25,16 @@ for i in range(ns):
 
 
 # number of reviews in learning set
-nl = 1000
+nl = 2500
 
 # minimum number of occurrences in corpus to be considered for feature
-min_ct = 20
+min_ct = 8
 
 # number of most common words to remove
 ncommon = 150
 
 # number of top significant words for each category to use as features
-ntop = 100
+ntop = 1000
 
 # penalty factor for SVM
 C = 10

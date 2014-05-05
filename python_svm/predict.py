@@ -104,6 +104,7 @@ def predict_onevsall(text, score, num, verbose):
     print "Percentage Correct:", numcorrect / float(num)
     print "Mean Square Error:", error / float(num)
 
+    print ' Time elapsed: %.4f sec' % ((end - start))
     print ' Time elapsed: %.4f sec per review' % ((end - start)/float(num))
 
 
@@ -211,4 +212,5 @@ def predict_pair(text, score, num, verbose):
     print "Percentage Correct:", numcorrect / float(num)
     print "Mean Square Error:", error / float(num)
 
+    print ' Time elapsed: %.4f sec' % ((end - start))
     print ' Time elapsed: %.4f sec per review' % ((end - start)/float(num))

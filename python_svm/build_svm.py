@@ -60,6 +60,8 @@ def feature_select(text, score, learn_idx, stemmer):
                 dict_all[word] += 1 
             else:
                 dict_all[word] = 1
+#         if i % 100 == 0:
+#             print '  %d complete' % i
 
     # save dictionaries so for faster processing
     for i in range(ns):
