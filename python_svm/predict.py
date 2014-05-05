@@ -181,17 +181,20 @@ def predict_pair(text, score, num, verbose):
         # Print prediction and data
         predict = np.argmax(votes)
         most_votes = votes[predict]
+        head_to_head_best = 0
 
         if sum(votes == most_votes) > 1:
             maxindices = np.where(votes == most_votes)[0]
-            lower = maxindices[0]
-            higher = maxindices[1]
-            head_to_head_index = svm_pairs_reverse[str((lower + 1, higher + 1))]
-            head_to_head = svm_results[head_to_head_index]
-            if head_to_head > 0:
-                predict = lower
-            else:
-                predict = higher
+            best = maxindices[0]
+            for i in range(1,len(maxindices)):
+                current = maxindices[i]
+                head_to_head_index = svm_pairs_reverse[str((best + 1, current + 1))]
+                head_to_head = svm_results[head_to_head_index]
+                if abs(head_to_head) > abs(head_to_head_best):
+                    head_to_head_best = head_to_head
+                    if head_to_head_best < 0:
+                        best = current
+            predict = best
 
         if predict == scr:
             numcorrect += 1
